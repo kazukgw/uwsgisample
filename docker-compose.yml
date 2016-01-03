@@ -1,0 +1,20 @@
+uwsgi:
+  build: ./uwsgi
+  command: uwsgi --socket /var/run/sock/uwsgi_app_name.sock --wsgi-file /var/app/app.py
+  volumes:
+      - ./app:/var/app
+      - /var/run/sock:/var/run/sock
+
+nginx:
+  image: nginx
+  ports:
+    - "80:80"
+  command: sh /nginx/start_nginx.sh
+  volumes:
+    - ./app:/var/app
+    - ./log/nginx:/var/log/nginx
+    - /var/run/sock:/var/run/sock
+    - ./public:/usr/share/nginx/html
+    - ./nginx:/nginx
+  environments:
+    - APP_NAME: uwsgi_app_name
